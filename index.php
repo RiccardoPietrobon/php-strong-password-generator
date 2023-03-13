@@ -5,33 +5,29 @@
 // (composta da lettere, lettere maiuscole, numeri e simboli) da restituire all'utente.
 // Scriviamo tutto (logica e layout) in un unico file *index.php*
 
-$password_len = $_GET["password_len"] ?? "";
+// $password_len = $_GET["password_len"] ?? "";
 
-    $password_len_invalid = false;
-    if($password_len > 20 || $password_len < 5){//mi assicuro che l'input sia valido solo se compreso tre 5 e 20
-      $password_len = 5;
-      $password_len_invalid = true;
-    }
+//     $password_len_invalid = false;
+//     if($password_len > 20 || $password_len < 5){//mi assicuro che l'input sia valido solo se compreso tre 5 e 20
+//       $password_len = 5;
+//       $password_len_invalid = true;
+//     }
 
-if(!empty($password_len)){
+// if(!empty($password_len)){
 
-function generateRandomPassword($length_len) {
-    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!%=+-*';
-    $charactersLength = strlen($characters);
-    $randomString = '';
-    for ($i = 0; $i < $length_len; $i++) {
-        $randomString .= $characters[random_int(0, $charactersLength - 1)];
-    }
-    echo $randomString;
-}
+// function generateRandomPassword($length_len) {
+//     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!%=+-*';
+//     $charactersLength = strlen($characters);
+//     $randomString = '';
+//     for ($i = 0; $i < $length_len; $i++) {
+//         $randomString .= $characters[random_int(0, $charactersLength - 1)];
+//     }
+//     echo $randomString;
+// }
 
-}
+// }
 
-
-
-// Milestone 2
-// Verificato il corretto funzionamento del nostro codice, 
-// spostiamo la logica in un file *functions.php* che includeremo poi nella pagina principale
+include_once(__DIR__ . './functions.php');
 
 // Milestone 3 (BONUS)
 // Invece di visualizzare la password nella index, effettuare un redirect ad una pagina dedicata 
@@ -69,7 +65,6 @@ function generateRandomPassword($length_len) {
                     </div>
                     <div class="card-body">
                         <form method="GET" class="row">
-
                             <div class="col-4 mb-3">
                                 <label for="password_len" class="form-label">Lunghezza password</label>
                                 <input type="number" class="form-control" id="password_len" name="password_len" min="5"
