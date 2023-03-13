@@ -5,9 +5,15 @@
 // (composta da lettere, lettere maiuscole, numeri e simboli) da restituire all'utente.
 // Scriviamo tutto (logica e layout) in un unico file *index.php*
 
-$password_len=$_GET["password_len"];
+$password_len = $_GET["password_len"] ?? "";
 
-$randomString = "";
+    $password_len_invalid = false;
+    if($password_len > 20 || $password_len < 5){//mi assicuro che l'input sia valido solo se compreso tre 5 e 20
+      $password_len = 5;
+      $password_len_invalid = true;
+    }
+
+if(!empty($password_len)){
 
 function generateRandomPassword($length_len) {
     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!%=+-*';
@@ -19,6 +25,7 @@ function generateRandomPassword($length_len) {
     echo $randomString;
 }
 
+}
 
 
 
@@ -66,7 +73,12 @@ function generateRandomPassword($length_len) {
                             <div class="col-4 mb-3">
                                 <label for="password_len" class="form-label">Lunghezza password</label>
                                 <input type="number" class="form-control" id="password_len" name="password_len" min="5"
-                                    max="20">
+                                    max="20" <?= $password_len_invalid ? "is-invalid" : "" ?>
+                                    value="<?= $password_len ?>">
+                                <?php if($password_len_invalid) : ?>
+                                <div id="password_feedback" class="invalid-feedback">Errore, ritenta.
+                                </div>
+                                <?php endif ?>
 
                             </div>
                             <div class="col-4">
