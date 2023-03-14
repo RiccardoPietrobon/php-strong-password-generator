@@ -1,3 +1,17 @@
+<?php 
+
+// Milestone 3 (BONUS)
+// Invece di visualizzare la password nella index, effettuare un redirect ad una pagina dedicata 
+// che tramite $_SESSION recupererà la password da mostrare all'utente.
+
+
+session_start(); //inizializzo la sessione
+$generated_password = $_SESSION["generated_password"]; //recupero la variabile in index
+
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -12,8 +26,23 @@
 
 <body>
     <div class="container">
-        <h1> La tua password è <?php generateRandomPassword($password_len); ?>
-        </h1>
+        <h1>Generator password</h1>
+        <section class="row my-5">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        Password generata
+                    </div>
+                    <div class="card-body">
+
+                        <div class="alert alert-success" role="alert">
+                            La password generata è: <strong> <?= $generated_password ?> </strong>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 </body>
 

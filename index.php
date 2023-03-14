@@ -5,33 +5,46 @@
 // (composta da lettere, lettere maiuscole, numeri e simboli) da restituire all'utente.
 // Scriviamo tutto (logica e layout) in un unico file *index.php*
 
-// $password_len = $_GET["password_len"] ?? "";
+//eseguo
 
-//     $password_len_invalid = false;
-//     if($password_len > 20 || $password_len < 5){//mi assicuro che l'input sia valido solo se compreso tre 5 e 20
-//       $password_len = 5;
-//       $password_len_invalid = true;
-//     }
+require_once(__DIR__ . "/functions.php");//fa riferimento al file delle functions
 
-// if(!empty($password_len)){
+if(!empty($_GET)){ //condizione: eseguo il codice se ho una lunghezza in input 
 
-// function generateRandomPassword($length_len) {
-//     $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!%=+-*';
-//     $charactersLength = strlen($characters);
-//     $randomString = '';
-//     for ($i = 0; $i < $length_len; $i++) {
-//         $randomString .= $characters[random_int(0, $charactersLength - 1)];
-//     }
-//     echo $randomString;
-// }
+$alphabet = "abcdefghijklmnopqrstuvwxyz";
+$alphabet_UP = strtoupper($alphabet);//rendere le lettere maiuscole
+$numbers = "0123456789";
+$specials = "!%=+-*-_@#§";
 
-// }
 
-include_once(__DIR__ . './functions.php');
 
-// Milestone 3 (BONUS)
-// Invece di visualizzare la password nella index, effettuare un redirect ad una pagina dedicata 
-// che tramite $_SESSION recupererà la password da mostrare all'utente.
+$allowed_chars = ""; //in partenza non ho caratteri permessi, li aggiungo se clicco le checkbox
+
+if(isset($_GET["allow_alphabet_lc"])) $allowed_chars .= $alphabet; //se checbox premuta     //aggiungo valore
+if(isset($_GET["allow_alphabet_uc"])) $allowed_chars .= $alphabet_UP;
+if(isset($_GET["allow_numbers"])) $allowed_chars .= $numbers;
+if(isset($_GET["allow_specials"])) $allowed_chars .= $specials;
+//se l'utente non seleziona nulla gestiamo noi mettendo tutti i caratteri possibili
+if(empty($allowed_chars)) $allowed_chars = $alphabet . $alphabet_UP . $numbers . $specials; //concatenazione di tutti i caratteri
+
+$password_len = (int) $_GET["password_len"] ?? 5; //prendo il valore della lunghezza dall'input, se non ce l'abbiamo do 5, metto (int) così lo passa come un intero
+$allow_repeat = (bool) isset($_GET["allow_repeat"]) ? true : false; //Posso ripetere o no, ho 2 possibilità, quindi bool, true/false
+
+//se le ripetizioni non sono ammesse e la lunghezza della password messa dall'utente è maggiore di quella richiesta ERRORE
+if(!$allow_repeat && ($password_len > strlen($allowed_chars))){ 
+    $allow_repeat = true;
+}
+
+
+session_start(); //inizio la sessione, va fatta una volta per file
+$_SESSION["generated_password"] = generateRandomPassword($allowed_chars, $password_len, $allow_repeat); //salvo la password in una variabile di sessione, faccio passare i caratteri permessi
+header("Location: ./password.php");
+
+}
+
+
+
+
 
 // Milestone 4 (BONUS)
 // Gestire ulteriori parametri per la password: quali caratteri usare fra numeri, lettere e simboli. 
@@ -57,35 +70,94 @@ include_once(__DIR__ . './functions.php');
 <body>
     <div class="container">
         <h1>Generator password</h1>
-        <section class="row my-5">
-            <div class="col-12">
+        <section class="row my-5 justify-content-center">
+            <div class="col-7">
                 <div class="card">
                     <div class="card-header">
                         Genera una password casuale
                     </div>
                     <div class="card-body">
+                        <?php if(!isset($generated_password)) : ?>
+                        <!-- se non c'è la password mostro il form -->
                         <form method="GET" class="row">
-                            <div class="col-4 mb-3">
-                                <label for="password_len" class="form-label">Lunghezza password</label>
-                                <input type="number" class="form-control" id="password_len" name="password_len" min="5"
-                                    max="20" <?= $password_len_invalid ? "is-invalid" : "" ?>
-                                    value="<?= $password_len ?>">
-                                <?php if($password_len_invalid) : ?>
-                                <div id="password_feedback" class="invalid-feedback">Errore, ritenta.
-                                </div>
-                                <?php endif ?>
-
-                            </div>
-                            <div class="col-4">
-                                <button class="btn btn-primary">
-                                    Filtra il form
-                                </button>
-                            </div>
                             <div class="col-12">
-                                La tua password è <?php generateRandomPassword($password_len); ?>
-                            </div>
+                                <div class="row">
+                                    <div class="col-4 mb-3">
+                                        <label for="password_len" class="form-label">Lunghezza password</label>
+                                    </div>
+                                    <div class="col-8">
+                                        <input type="number" class="form-control" id="password_len" name="password_len"
+                                            min="5" max="20">
+                                    </div>
+                                </div>
 
+                                <hr>
+
+                                <div class="row">
+                                    <div class="col-4 mb-3">
+                                        <label for="password_len" class="form-label">Caratteri permessi</label>
+                                    </div>
+                                    <div class="col-8">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="1"
+                                                name="allow_alphabet_lc" id="allow_alphabet_lc">
+                                            <label class="form-check-label" for="allow_alphabet_lc">
+                                                Alfabeto minuscolo
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="1"
+                                                name="allow_alphabet_uc" id="allow_alphabet_uc">
+                                            <label class="form-check-label" for="allow_alphabet_uc">
+                                                Alfabeto maiuscolo
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="1"
+                                                name="allow_numbers" id="allow_numbers">
+                                            <label class="form-check-label" for="allow_numbers">
+                                                Numeri
+                                            </label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value="1"
+                                                name="allow_specials" id="allow_specials">
+                                            <label class="form-check-label" for="allow_specials">
+                                                Caratteri speciali
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                <div class="row">
+                                    <div class="col-4 mb-3">
+                                        <label for="password_len" class="form-label">Permetti ripetizioni?</label>
+                                    </div>
+                                    <div class="col-8">
+                                        <input class="form-check-input" type="checkbox" value="1" name="allow_repeat"
+                                            id="allow_repeat">
+                                        <label class="form-check-label" for="allow_repeat">
+                                            Sì
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                <div class="row">
+                                    <div class="col-4">
+                                        <button class="btn btn-primary">
+                                            Genera password
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
                         </form>
+                        <?php endif; ?>
+
                     </div>
                 </div>
             </div>
